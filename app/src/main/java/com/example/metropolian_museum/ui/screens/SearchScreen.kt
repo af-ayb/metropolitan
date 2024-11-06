@@ -9,10 +9,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -32,43 +35,45 @@ import com.example.metropolian_museum.ui.theme.MetropolianMuseumTheme
 
 @Composable
 fun HomeScreen(
-    artsUiState: ArtsUiState,
+    searchState: SearchState,
+    event: (SearchEvent) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp)
 ){
-    when(artsUiState){
-        is ArtsUiState.Loading -> null
-        is ArtsUiState.Success ->
+//    when(searchState){
+//        is ArtsUiState.Loading -> null
+//        is ArtsUiState.Success ->
             SearchScreen(
-                arts = artsUiState.arts,
+                state = searchState,
+                event = event,
                 modifier = modifier
                     .padding(16.dp),
                 contentPadding = contentPadding
             )
-        else -> null
-    }
+//        else -> null
+
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
-    arts: Objects,
+//    arts: Objects,
+    state: SearchState,
+    event: (SearchEvent) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp)
 ){
-    var value by remember { mutableStateOf("") }
-    Column(
-        modifier = modifier
-    ){
-        SearchTextField(
-            label = R.string.search,
-            value = value,
-            onValueChange = {value = it},
-            modifier = Modifier
-                .fillMaxWidth(),
-            contentPadding = contentPadding
-        )
+    SearchBar(
+        query = state.searchQuery,
+        onQueryChange = {event(SearchEvent.UpdateSearchQuery(it))},
+        onSearch = {event(SearchEvent.SearchArts)},
+        active = state.isSearching,
+        onActiveChange = {event(SearchEvent.SearchArts)},
+        modifier = modifier.fillMaxWidth().padding(40.dp)
+    )
+    {
         ArtsList(
-            arts = arts.objectsIds.map { it.toString() },
+            arts = state.arts?.objectsIds?.map (Int::toString ) ?: emptyList()
         )
     }
 }
@@ -131,11 +136,11 @@ private fun ArtIdCard(
     }
 }
 
-@Preview
-@Composable
-fun SearchScreenPreview(){
-    MetropolianMuseumTheme {
-        val mockData = Objects(2, listOf(1233, 1234))
-        SearchScreen(mockData, Modifier.fillMaxSize())
-    }
-}
+//@Preview
+//@Composable
+//fun SearchScreenPreview(){
+//    MetropolianMuseumTheme {
+//        val mockData = Objects(2, listOf(1233, 1234))
+//        SearchScreen(mockData, Modifier.fillMaxSize())
+//    }
+//}

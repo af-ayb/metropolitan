@@ -7,5 +7,5 @@ import kotlinx.serialization.Serializable
 data class Objects(
     val total: Int,
     @SerialName("objectIDs")
-    val objectsIds: List<Int>
+    val objectsIds: List<Int>?
 )

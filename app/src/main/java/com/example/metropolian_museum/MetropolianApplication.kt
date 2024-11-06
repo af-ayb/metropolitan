@@ -1,13 +1,7 @@
 package com.example.metropolian_museum
 
 import android.app.Application
-import com.example.metropolian_museum.data.AppContainer
-import com.example.metropolian_museum.data.DefaultAppContainer
+import dagger.hilt.android.HiltAndroidApp
 
-class MetropolianApplication : Application(){
-    lateinit var container: AppContainer
-    override fun onCreate() {
-        super.onCreate()
-        container = DefaultAppContainer()
-    }
-}
+@HiltAndroidApp
+class MetropolianApplication : Application()

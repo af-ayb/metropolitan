@@ -11,9 +11,11 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.metropolian_museum.MetropolianApplication
 import com.example.metropolian_museum.data.ArtsRepository
 import com.example.metropolian_museum.network.Objects
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import okio.IOException
+import javax.inject.Inject
 
 sealed interface ArtsUiState{
     data class Success(val arts: Objects) : ArtsUiState
@@ -21,7 +23,8 @@ sealed interface ArtsUiState{
     object Loading: ArtsUiState
 }
 
-class ArtsViewModel(
+@HiltViewModel
+class ArtsViewModel @Inject constructor(
     private val artsRepository: ArtsRepository
 ): ViewModel() {
     var artsUiState: ArtsUiState by mutableStateOf(ArtsUiState.Loading)
@@ -42,14 +45,4 @@ class ArtsViewModel(
         }
     }
 
-    companion object {
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val application = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY]
-                        as MetropolianApplication)
-                val artsRepository = application.container.artsRepository
-                ArtsViewModel(artsRepository = artsRepository)
-            }
-        }
-    }
 }

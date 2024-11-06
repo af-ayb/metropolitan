@@ -8,7 +8,7 @@ interface ArtsApiService {
     @GET("objects")
     suspend fun getArtIds(): Objects
 
-    @GET("objects")
+    @GET("search")
     suspend fun searchObjects(
         @Query("q") searchQuery: String,
     ): Objects

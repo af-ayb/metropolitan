@@ -4,6 +4,7 @@ import com.example.metropolian_museum.network.Objects
 
 
 data class SearchState (
-    val searchQuery: String,
-    val arts: Objects
+    val searchQuery: String = "",
+    val arts: Objects? = null,
+    val isSearching: Boolean = false,
 )

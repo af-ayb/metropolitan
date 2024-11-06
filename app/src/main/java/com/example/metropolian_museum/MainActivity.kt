@@ -17,7 +17,10 @@ import com.example.metropolian_museum.network.Art
 import com.example.metropolian_museum.ui.MetropolianMuseumApp
 import com.example.metropolian_museum.ui.screens.DetailsLayout
 import com.example.metropolian_museum.ui.theme.MetropolianMuseumTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+// inject in android framework
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
