@@ -30,19 +30,19 @@ class ArtsViewModel @Inject constructor(
     var artsUiState: ArtsUiState by mutableStateOf(ArtsUiState.Loading)
         private set
 
-    init{
-        getArts()
-    }
+//    init{
+//        getArts()
+//    }
 
-    fun getArts(){
-        viewModelScope.launch{
-            artsUiState = ArtsUiState.Loading
-            artsUiState = try{
-                ArtsUiState.Success(artsRepository.getArtsById())
-            }catch (e: IOException){
-                ArtsUiState.Error
-            }
-        }
-    }
+//    fun getArts(){
+//        viewModelScope.launch{
+//            artsUiState = ArtsUiState.Loading
+//            artsUiState = try{
+//                ArtsUiState.Success(artsRepository.getArtsById())
+//            }catch (e: IOException){
+//                ArtsUiState.Error
+//            }
+//        }
+//    }
 
 }

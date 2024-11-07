@@ -15,12 +15,10 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.metropolian_museum.R
 import com.example.metropolian_museum.ui.screens.SearchScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.metropolian_museum.ui.screens.HomeScreen
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.metropolian_museum.ui.screens.SearchViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MetropolianMuseumApp(){
     Scaffold(
@@ -34,18 +32,14 @@ fun MetropolianMuseumApp(){
                 }
             )
         }
-    ){
+    ){  it ->
         Surface (
             modifier = Modifier.fillMaxSize(),
         ){
             val artsViewModel = hiltViewModel<ArtsViewModel>()
             val searchViewModel = hiltViewModel<SearchViewModel>()
-            HomeScreen(
-//                artsUiState = artsViewModel.artsUiState,
-                searchState = searchViewModel.state.value,
-                event = searchViewModel::onEvent,
-                contentPadding = it,
-                modifier = Modifier.fillMaxSize()
+            SearchScreen(
+                contentPaddingValues = it
             )
         }
     }
