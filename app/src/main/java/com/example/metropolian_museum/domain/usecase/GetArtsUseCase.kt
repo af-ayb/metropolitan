@@ -1,7 +1,4 @@
-package com.example.metropolian_museum.network
-
-import com.example.metropolian_museum.data.ArtsRepository
-import javax.inject.Inject
+package com.example.metropolian_museum.domain.usecase
 
 //class GetArtsUseCase @Inject constructor(
 //    private val artsRepository: ArtsRepository

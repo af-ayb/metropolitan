@@ -1,13 +1,9 @@
-package com.example.metropolian_museum.ui.screens
+package com.example.metropolian_museum.ui.search
 
-import android.annotation.SuppressLint
-import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -16,28 +12,27 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedTextFieldDefaults.contentPadding
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
 import com.example.metropolian_museum.R
-import com.example.metropolian_museum.network.Objects
+import com.example.metropolian_museum.data.model.Objects
+import com.example.metropolian_museum.ui.search.state.SearchScreenState
+import com.example.metropolian_museum.ui.search.state.SearchViewModel
 
-@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun SearchScreen(
     viewModel: SearchViewModel = hiltViewModel(),
-    contentPaddingValues: PaddingValues = PaddingValues(0.dp)
+    onIdClick: (String) -> Unit,
+    modifier: Modifier = Modifier
 ){
     val screenState = viewModel.uiState.collectAsState()
     val keywordState = viewModel.keyword.collectAsState()
@@ -45,9 +40,9 @@ fun SearchScreen(
         keyword = keywordState.value,
         state = screenState.value,
         event = viewModel::updateKeyword,
-        modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .padding(top = contentPaddingValues.calculateTopPadding())
+        onIdClick = onIdClick,
+        modifier = modifier
+            .padding(horizontal = dimensionResource(R.dimen.padding_medium))
             .fillMaxSize()
     )
 
@@ -59,6 +54,7 @@ private fun SearchScreen(
     keyword: String,
     state: SearchScreenState,
     event: (String) -> Unit,
+    onIdClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ){
     Column(
@@ -72,23 +68,23 @@ private fun SearchScreen(
         when(state){
             is SearchScreenState.Empty ->{
                 Text(
-                    text = "Enter the keyword to find the art!"
+                    text = stringResource(R.string.empty)
                 )
             }
             is SearchScreenState.Loading -> {
                 Image(
-                    modifier = modifier.size(200.dp),
+                    modifier = modifier.size(dimensionResource(R.dimen.primary_image_size)),
                     painter = painterResource(R.drawable.loading_img),
-                    contentDescription = "Loading"
+                    contentDescription = stringResource(R.string.loading)
                 )
             }
             is SearchScreenState.Error -> {
                 Text (
-                    text = "Error: ${state.message}"
+                    text = stringResource(R.string.error, state.message)
                 )
             }
             is SearchScreenState.Success -> {
-                ArtsList(state.objects)
+                ArtsList(state.objects, onIdClick = onIdClick)
             }
         }
     }
@@ -110,7 +106,7 @@ private fun SearchTextField(
         onValueChange = {
             onValueChange(it)
         },
-        label = { Text("Search") },
+        label = { Text(stringResource(R.string.search)) },
         singleLine = true,
         modifier = modifier
             .fillMaxWidth()
@@ -120,19 +116,24 @@ private fun SearchTextField(
 @Composable
 private fun ArtsList(
     objects: Objects,
+    onIdClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ){
     val arts = objects.objectsIds?.map (Int::toString) ?: emptyList()
     LazyVerticalGrid (
-        columns = GridCells.Adaptive(100.dp),
+        columns = GridCells.Adaptive(dimensionResource(R.dimen.grid_cell_size)),
         modifier = modifier
-            .padding(top = 16.dp),
+            .padding(top = dimensionResource(R.dimen.padding_medium)),
     ){
         items(
             items = arts,
             key = {art -> art}
         ){art ->
-            ArtIdCard(artId = art, modifier = modifier.fillMaxWidth())
+            ArtIdCard(
+                artId = art,
+                modifier = modifier.fillMaxWidth(),
+                onIdClick = onIdClick
+            )
         }
     }
 }
@@ -140,14 +141,16 @@ private fun ArtsList(
 @Composable
 private fun ArtIdCard(
     artId: String,
+    onIdClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ){
     Card(
-        modifier = modifier.padding(4.dp)
+        modifier = modifier.padding(dimensionResource(R.dimen.padding_small)),
+        onClick = {onIdClick(artId)}
     ){
         Text(
             text = artId,
-            modifier = modifier.padding(vertical = 16.dp),
+            modifier = modifier.padding(vertical = dimensionResource(R.dimen.padding_medium)),
             textAlign = TextAlign.Center
         )
     }

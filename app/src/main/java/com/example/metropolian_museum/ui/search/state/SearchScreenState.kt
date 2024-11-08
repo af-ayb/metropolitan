@@ -1,6 +1,6 @@
-package com.example.metropolian_museum.ui.screens
+package com.example.metropolian_museum.ui.search.state
 
-import com.example.metropolian_museum.network.Objects
+import com.example.metropolian_museum.data.model.Objects
 
 
 sealed interface SearchScreenState{

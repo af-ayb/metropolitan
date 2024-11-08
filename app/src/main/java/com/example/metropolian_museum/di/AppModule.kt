@@ -1,11 +1,7 @@
 package com.example.metropolian_museum.di
 
-import com.example.metropolian_museum.MetropolianApplication
-import com.example.metropolian_museum.data.ArtsRepository
-import com.example.metropolian_museum.data.NetworkArtsRepository
-import com.example.metropolian_museum.network.ArtsApiService
+import com.example.metropolian_museum.data.remote.ArtsApiService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,7 +24,7 @@ object AppModule {
     @Singleton
     fun provideApi(): ArtsApiService{
         return Retrofit.Builder()
-            .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
+            .addConverterFactory(Json{ignoreUnknownKeys = true}.asConverterFactory("application/json".toMediaType()))
             .baseUrl(baseUrl)
             .build()
             .create(ArtsApiService::class.java)

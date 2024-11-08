@@ -1,8 +1,7 @@
 package com.example.metropolian_museum.di
 
-import com.example.metropolian_museum.data.ArtsRepository
-import com.example.metropolian_museum.data.NetworkArtsRepository
-import com.example.metropolian_museum.network.Art
+import com.example.metropolian_museum.data.repository.ArtsRepository
+import com.example.metropolian_museum.data.repository.NetworkArtsRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

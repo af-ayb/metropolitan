@@ -1,20 +1,14 @@
-package com.example.metropolian_museum.ui.screens
+package com.example.metropolian_museum.ui.search.state
 
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.example.metropolian_museum.data.ArtsRepository
+import com.example.metropolian_museum.data.repository.ArtsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import androidx.compose.runtime.State
 import androidx.lifecycle.viewModelScope
-import com.example.metropolian_museum.network.Objects
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -23,7 +17,7 @@ import java.io.IOException
 @OptIn(FlowPreview::class)
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val artsRepository: ArtsRepository
+    private val artsRepository: ArtsRepository,
 ): ViewModel(){
 
     // for simple cases, not preferred
@@ -65,5 +59,9 @@ class SearchViewModel @Inject constructor(
 
     fun updateKeyword(new: String){
         keyword.value = new
+    }
+
+    fun navigateToArt(id: Int){
+
     }
 }

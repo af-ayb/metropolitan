@@ -6,7 +6,7 @@
 
 
     <application
-        android:name=".MetropolianApplication"
+        android:name=".di.MetropolianApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
