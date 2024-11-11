@@ -32,15 +32,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.metropolian_museum.R
-import com.example.metropolian_museum.data.model.Art
+import com.example.metropolian_museum.data.model.ArtApi
+import com.example.metropolian_museum.domain.model.Art
 import com.example.metropolian_museum.ui.AppBar
+import com.example.metropolian_museum.ui.details.preview.DetailsScreenPreviewProvider
 import com.example.metropolian_museum.ui.details.state.ArtDetailScreenState
 import com.example.metropolian_museum.ui.details.state.ArtDetailsViewModel
 import com.example.metropolian_museum.ui.theme.MetropolianMuseumTheme
@@ -65,7 +69,7 @@ fun ArtDetailsScreen(
         Surface(
             modifier = Modifier.fillMaxSize(),
         ) {
-            DetailsScreen(screenState.value, modifier = Modifier.padding(top = innerPadding.calculateTopPadding()))
+            DetailsScreen(screenState.value, modifier = Modifier.padding(top = innerPadding.calculateTopPadding()).fillMaxSize())
         }
     }
 }
@@ -77,43 +81,75 @@ private fun DetailsScreen(
 ){
     when(state){
         is ArtDetailScreenState.Loading -> {
-            Image(
-                modifier = Modifier
-                    .size(dimensionResource(R.dimen.primary_image_size)),
-                painter = painterResource(R.drawable.loading_img),
-                contentDescription = stringResource(R.string.loading)
-            )
+            DetailsScreenLoading(modifier)
         }
         is ArtDetailScreenState.Error -> {
-            Text (
-                text = stringResource(R.string.error)
-            )
+            DetailsScreenError(modifier)
         }
         is ArtDetailScreenState.Success -> {
-            DetailsLayout(state.art, modifier = modifier)
+            DetailsLayout(art = state.art, modifier = modifier)
         }
     }
 }
 
 @Composable
+private fun DetailsScreenLoading(
+    modifier: Modifier = Modifier
+) = Box(
+    contentAlignment = Alignment.Center,
+    modifier = modifier
+){
+    Image(
+        modifier = Modifier
+            .size(dimensionResource(R.dimen.primary_image_size)),
+        painter = painterResource(R.drawable.loading_img),
+        contentDescription = stringResource(R.string.loading)
+    )
+}
+
+@Composable
+private fun DetailsScreenError(
+    modifier: Modifier = Modifier
+) = Box(
+    contentAlignment = Alignment.Center,
+    modifier = modifier
+){
+    Text (
+        text = stringResource(R.string.error)
+    )
+}
+
+@Composable
 fun ArtImage(
-    picUrl: String,
+    picUrl: String?,
     modifier: Modifier = Modifier,
 ){
     Box(
         modifier = modifier
     ){
-        AsyncImage(
-            model = ImageRequest.Builder(context = LocalContext.current)
-                .data(picUrl)
-                .crossfade(true)
-                .build(),
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .height(dimensionResource(R.dimen.primary_image_size))
-                .fillMaxWidth()
-        )
+        if (picUrl.isNullOrEmpty()){
+            Image(
+                painter = painterResource(R.drawable.no_image),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .height(dimensionResource(R.dimen.secondary_image_size))
+                    .fillMaxWidth()
+            )
+        }
+        else{
+            AsyncImage(
+                model = ImageRequest.Builder(context = LocalContext.current)
+                    .data(picUrl)
+                    .crossfade(true)
+                    .build(),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .height(dimensionResource(R.dimen.primary_image_size))
+                    .fillMaxWidth()
+            )
+        }
     }
 }
 
@@ -125,7 +161,7 @@ fun DetailsLayout(
     Column(
         modifier = modifier
             .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         ArtImage(
             picUrl = art.primaryImage
@@ -135,28 +171,28 @@ fun DetailsLayout(
                 .padding(top = dimensionResource(R.dimen.padding_medium))
                 .padding(horizontal = dimensionResource(R.dimen.padding_medium))
                 .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Text(
+            TextOrEmpty(
                 text = art.title,
                 style = MaterialTheme.typography.headlineSmall,
                 textAlign = TextAlign.Center
             )
-            Text(
+            TextOrEmpty(
                 text = art.objectDate,
                 style = MaterialTheme.typography.bodyMedium,
             )
-            Text(
+            TextOrEmpty(
                 text = art.department,
                 style = MaterialTheme.typography.labelLarge
             )
-            Text(
-                text = "${art.culture}, ${art.period}",
+            MultipleTextsOrEmpty(
+                texts = listOf(art.culture, art.period),
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center
             )
-            Text(
-                text = "${art.artistRole} ${art.artistDisplayName}",
+            MultipleTextsOrEmpty(
+                texts = listOf(art.artistRole, art.artistDisplayName),
                 style = MaterialTheme.typography.labelLarge
             )
             Text(
@@ -165,8 +201,39 @@ fun DetailsLayout(
                 color = MaterialTheme.colorScheme.secondary
             )
         }
-        ImagesScroller(art.additionalImages,
-            modifier = Modifier.padding(top = dimensionResource(R.dimen.padding_medium)))
+        art.additionalImages?.let{
+            ImagesScroller(art.additionalImages,
+                modifier = Modifier.padding(top = dimensionResource(R.dimen.padding_medium)))
+        }
+    }
+}
+
+@Composable
+fun MultipleTextsOrEmpty(
+    texts: List<String?>,
+    style: TextStyle,
+    textAlign: TextAlign = TextAlign.Center
+){
+    val nonEmptyTexts = texts.filter{ it != null && it.isNotEmpty() }
+    TextOrEmpty(
+        text = nonEmptyTexts.joinToString(", "),
+        style = style,
+        textAlign = textAlign
+    )
+}
+
+@Composable
+fun TextOrEmpty(
+    text: String?,
+    style: TextStyle,
+    textAlign: TextAlign = TextAlign.Center
+){
+    if (!text.isNullOrEmpty()){
+        Text(
+            text = text,
+            style = style,
+            textAlign = textAlign
+        )
     }
 }
 
@@ -214,27 +281,12 @@ fun ImagesScroller(imagesUrls: List<String>, modifier: Modifier = Modifier){
 
 @Preview
 @Composable
-fun DetailsLayoutPreview(){
+fun DetailsScreenPreview(
+    @PreviewParameter(DetailsScreenPreviewProvider::class) state: ArtDetailScreenState
+){
     MetropolianMuseumTheme {
-        Surface {
-            DetailsLayout(
-                Art(
-                    objectId = 45734,
-                    primaryImage = "https://images.metmuseum.org/CRDImages/ep/original/DT1567.jpg",
-                    additionalImages = listOf(
-                        "https://images.metmuseum.org/CRDImages/as/original/DP251138.jpg",
-                        "https://images.metmuseum.org/CRDImages/as/original/DP251120.jpg"
-                    ),
-                    title = "Quail and Millet",
-                    department = "Asian Art",
-                     culture = "Japan",
-                 period = "Edo period (1615–1868)",
-             artistRole = "Artist",
-             artistDisplayName = "Kiyohara Yukinobu",
-             objectDate ="late 17th century",
-                ),
-                modifier = Modifier.fillMaxSize()
-            )
-        }
+        DetailsScreen(
+            state = state
+        )
     }
 }

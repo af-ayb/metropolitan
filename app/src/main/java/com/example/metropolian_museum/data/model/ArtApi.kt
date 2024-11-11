@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Art (
+data class ArtApi (
     @SerialName("objectID")
     val objectId: Int,
     @SerialName("primaryImageSmall")

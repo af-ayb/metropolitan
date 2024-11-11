@@ -1,7 +1,6 @@
 package com.example.metropolian_museum.ui.search.state
 
-import android.os.Message
-import com.example.metropolian_museum.data.model.Objects
+import com.example.metropolian_museum.domain.model.Objects
 
 
 sealed interface SearchScreenState{
