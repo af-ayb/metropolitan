@@ -23,8 +23,9 @@ object AppModule {
     // scope, single instance of API
     @Singleton
     fun provideApi(): ArtsApiService{
+        val withUnknownKeys = Json { ignoreUnknownKeys = true }
         return Retrofit.Builder()
-            .addConverterFactory(Json{ignoreUnknownKeys = true}.asConverterFactory("application/json".toMediaType()))
+            .addConverterFactory(withUnknownKeys.asConverterFactory("application/json".toMediaType()))
             .baseUrl(baseUrl)
             .build()
             .create(ArtsApiService::class.java)

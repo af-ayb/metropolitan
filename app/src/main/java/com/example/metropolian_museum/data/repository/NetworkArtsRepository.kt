@@ -12,7 +12,7 @@ class NetworkArtsRepository @Inject constructor(
         return artsApiService.getObjectById(id)
     }
 
-    override suspend fun searchNews(searchQuery: String): Objects {
+    override suspend fun searchArts(searchQuery: String): Objects {
         return artsApiService.searchObjects(searchQuery)
     }
 }

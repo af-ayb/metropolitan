@@ -33,10 +33,9 @@ class ArtDetailsViewModel @Inject constructor(
 
             _uiState.value = try{
                 ArtDetailScreenState.Success(artsRepository.getArtById(id))
-            }catch (e: IOException){
+            }catch (e: Exception){
                 ArtDetailScreenState.Error
             }
         }
     }
-
 }

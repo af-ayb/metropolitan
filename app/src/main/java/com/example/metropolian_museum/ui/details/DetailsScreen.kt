@@ -18,6 +18,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,6 +31,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -38,6 +40,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.metropolian_museum.R
 import com.example.metropolian_museum.data.model.Art
+import com.example.metropolian_museum.ui.AppBar
 import com.example.metropolian_museum.ui.details.state.ArtDetailScreenState
 import com.example.metropolian_museum.ui.details.state.ArtDetailsViewModel
 import com.example.metropolian_museum.ui.theme.MetropolianMuseumTheme
@@ -46,10 +49,25 @@ import kotlin.String
 @Composable
 fun ArtDetailsScreen(
     viewModel: ArtDetailsViewModel = hiltViewModel(),
-    modifier: Modifier = Modifier
+    canNavigateBack: Boolean,
+    navigateUp: () -> Unit,
 ){
     val screenState = viewModel.uiState.collectAsState()
-    DetailsScreen(screenState.value, modifier = modifier)
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            AppBar(
+                canNavigateBack = canNavigateBack,
+                navigateUp = navigateUp
+            )
+        }
+    ) { innerPadding ->
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            DetailsScreen(screenState.value, modifier = Modifier.padding(top = innerPadding.calculateTopPadding()))
+        }
+    }
 }
 
 @Composable
@@ -63,12 +81,12 @@ private fun DetailsScreen(
                 modifier = Modifier
                     .size(dimensionResource(R.dimen.primary_image_size)),
                 painter = painterResource(R.drawable.loading_img),
-                contentDescription = "Loading"
+                contentDescription = stringResource(R.string.loading)
             )
         }
         is ArtDetailScreenState.Error -> {
             Text (
-                text = "Error: "
+                text = stringResource(R.string.error)
             )
         }
         is ArtDetailScreenState.Success -> {

@@ -13,9 +13,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
@@ -23,35 +26,52 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.metropolian_museum.R
 import com.example.metropolian_museum.data.model.Objects
+import com.example.metropolian_museum.ui.AppBar
 import com.example.metropolian_museum.ui.search.state.SearchScreenState
 import com.example.metropolian_museum.ui.search.state.SearchViewModel
 
+// stateful version of the screen
 @Composable
 fun SearchScreen(
     viewModel: SearchViewModel = hiltViewModel(),
     onIdClick: (String) -> Unit,
-    modifier: Modifier = Modifier
+    canNavigateBack: Boolean,
+    navigateUp: () -> Unit,
 ){
-    val screenState = viewModel.uiState.collectAsState()
-    val keywordState = viewModel.keyword.collectAsState()
-    SearchScreen(
-        keyword = keywordState.value,
-        state = screenState.value,
-        event = viewModel::updateKeyword,
-        onIdClick = onIdClick,
-        modifier = modifier
-            .padding(horizontal = dimensionResource(R.dimen.padding_medium))
-            .fillMaxSize()
-    )
-
-
+    val screenState = viewModel.uiState.collectAsStateWithLifecycle()
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            AppBar(
+                canNavigateBack = canNavigateBack,
+                navigateUp = navigateUp
+            )
+        }
+    ) { innerPadding ->
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            SearchScreen(
+                q = viewModel.keyword,
+                state = screenState.value,
+                event = viewModel::updateKeyword,
+                onIdClick = onIdClick,
+                modifier = Modifier
+                    .padding(horizontal = dimensionResource(R.dimen.padding_medium))
+                    .padding(top = innerPadding.calculateTopPadding())
+                    .fillMaxSize()
+            )
+        }
+    }
 }
 
+// stateless version
 @Composable
 private fun SearchScreen(
-    keyword: String,
+    q: String,
     state: SearchScreenState,
     event: (String) -> Unit,
     onIdClick: (String) -> Unit,
@@ -61,7 +81,8 @@ private fun SearchScreen(
         modifier = modifier
     ){
         SearchTextField(
-            value = keyword,
+//            value = state.keyword,
+            value = q,
             onValueChange = event,
             modifier = Modifier
         )

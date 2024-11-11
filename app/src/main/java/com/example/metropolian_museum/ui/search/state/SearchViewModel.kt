@@ -1,67 +1,61 @@
 package com.example.metropolian_museum.ui.search.state
 
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
-import com.example.metropolian_museum.data.repository.ArtsRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import androidx.lifecycle.viewModelScope
+import com.example.metropolian_museum.data.repository.ArtsRepository
+import com.example.metropolian_museum.ui.search.SearchScreen
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.IOException
+import javax.inject.Inject
 
 @OptIn(FlowPreview::class)
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val artsRepository: ArtsRepository,
 ): ViewModel(){
+    // avoid reactive streams (StateFlow) to represent TextField
+    var keyword by mutableStateOf("")
+        private set
 
-    // for simple cases, not preferred
-    // mutableStateOf - for 1 Composable
-//    var uiState: SearchScreenState by mutableStateOf(SearchScreenState.Empty)
-//        private set
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val _uiState: StateFlow<SearchScreenState> =
+        snapshotFlow { keyword }
+            .mapLatest {
+                if (it.isBlank()) SearchScreenState.Empty
+                else{
+                    try{
+                        SearchScreenState.Success(it, artsRepository.searchArts(it))
 
-    // complex state, MVVM, unidirectional data flow
-    private val _uiState = MutableStateFlow<SearchScreenState>(SearchScreenState.Empty)
-    val uiState: StateFlow<SearchScreenState> = _uiState
-
-    // mutableStateFlow - for more composables
-    val keyword = MutableStateFlow("")
-
-    init {
-        keyword
-            .debounce(500L)
-            .onEach { search(it) }
-            .launchIn(viewModelScope)
-    }
-
-    private fun search(query: String){
-        if (query == ""){
-            _uiState.value = SearchScreenState.Empty
-        }
-        else{
-            _uiState.value = SearchScreenState.Loading
-
-            viewModelScope.launch{
-                try{
-                    _uiState.value = SearchScreenState.Success(artsRepository.searchNews(query))
-                } catch (e: IOException){
-                    _uiState.value = SearchScreenState.Error(e.message ?: "Error")
+                    } catch (e: IOException){
+                        SearchScreenState.Error(e.message ?: "Error")
+                    }
                 }
             }
-        }
-
-    }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(2000),
+                initialValue = SearchScreenState.Empty
+            )
+    val uiState = _uiState
 
     fun updateKeyword(new: String){
-        keyword.value = new
-    }
-
-    fun navigateToArt(id: Int){
-
+        keyword = new
     }
 }

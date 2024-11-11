@@ -1,4 +1,4 @@
-package com.example.metropolian_museum.di
+package com.example.metropolian_museum
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
