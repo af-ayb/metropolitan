@@ -1,5 +1,6 @@
 package com.example.metropolian_museum.ui.details.state
 
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,7 +8,10 @@ import com.example.metropolian_museum.ui.ScreenRoute
 import com.example.metropolian_museum.data.repository.ArtsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import okio.IOException
 import javax.inject.Inject
@@ -18,24 +22,22 @@ class ArtDetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ): ViewModel() {
 
-    private val _uiState = MutableStateFlow<ArtDetailScreenState>(ArtDetailScreenState.Loading)
-    val uiState: StateFlow<ArtDetailScreenState> = _uiState
-
     val id = ScreenRoute.DetailsScreenRoute.from(savedStateHandle).id
 
-    init{
-        getArt()
-    }
-
-    fun getArt(){
-        _uiState.value = ArtDetailScreenState.Loading
-        viewModelScope.launch{
-
-            _uiState.value = try{
-                ArtDetailScreenState.Success(artsRepository.getArtById(id))
-            }catch (e: Exception){
-                ArtDetailScreenState.Error
-            }
-        }
-    }
+    private val _uiState: StateFlow<ArtDetailScreenState> =
+            snapshotFlow{id}
+                .mapLatest {
+                    ArtDetailScreenState.Loading
+                    try{
+                        ArtDetailScreenState.Success(artsRepository.getArtById(id))
+                    }catch (e: Exception){
+                        ArtDetailScreenState.Error(e.message.toString())
+                    }
+                }
+                .stateIn(
+                    scope = viewModelScope,
+                    started = SharingStarted.Lazily,
+                    initialValue = ArtDetailScreenState.Loading
+                )
+    val uiState = _uiState
 }

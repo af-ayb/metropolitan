@@ -1,4 +1,4 @@
-package com.example.metropolian_museum.data.model
+package com.example.metropolian_museum.data.model.api
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

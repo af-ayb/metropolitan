@@ -9,7 +9,7 @@ class SearchScreenPreviewProvider : PreviewParameterProvider<SearchScreenState> 
         SearchScreenState.Empty,
         SearchScreenState.Loading,
         SearchScreenState.Success(
-            "a",
+           //"a",
             SearchPreviewData.objects,
         ),
         SearchScreenState.Error("No data")

@@ -1,7 +1,7 @@
 package com.example.metropolian_museum.data.remote
 
-import com.example.metropolian_museum.data.model.ArtApi
-import com.example.metropolian_museum.data.model.ObjectsApi
+import com.example.metropolian_museum.data.model.api.ArtApi
+import com.example.metropolian_museum.data.model.api.ObjectsApi
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query

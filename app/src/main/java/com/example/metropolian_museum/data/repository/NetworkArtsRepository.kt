@@ -1,10 +1,13 @@
 package com.example.metropolian_museum.data.repository
 
 import com.example.metropolian_museum.data.remote.ArtsApiService
-import com.example.metropolian_museum.data.model.ArtApi
-import com.example.metropolian_museum.data.model.ObjectsApi
+import com.example.metropolian_museum.data.model.api.ArtApi
+import com.example.metropolian_museum.data.model.api.ObjectsApi
+import com.example.metropolian_museum.domain.LoadingEvent
 import com.example.metropolian_museum.domain.model.Art
 import com.example.metropolian_museum.domain.model.Objects
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class NetworkArtsRepository @Inject constructor(
@@ -14,8 +17,21 @@ class NetworkArtsRepository @Inject constructor(
         return artsApiService.getObjectById(id).asDomain()
     }
 
+    // suspend -> return Flow
     override suspend fun searchArts(searchQuery: String): Objects {
         return artsApiService.searchObjects(searchQuery).asDomain()
+    }
+
+    override fun searchArtsFlow(searchQuery: String): Flow<LoadingEvent<Objects>>{
+        return flow {
+            emit(LoadingEvent.Loading)
+            try {
+                val objects = artsApiService.searchObjects(searchQuery).asDomain()
+                emit(LoadingEvent.Success(objects))
+            } catch (e: Exception) {
+                emit(LoadingEvent.Error(e.message.toString()))
+            }
+        }
     }
 }
 

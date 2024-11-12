@@ -41,7 +41,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.metropolian_museum.R
-import com.example.metropolian_museum.data.model.ArtApi
 import com.example.metropolian_museum.domain.model.Art
 import com.example.metropolian_museum.ui.AppBar
 import com.example.metropolian_museum.ui.details.preview.DetailsScreenPreviewProvider

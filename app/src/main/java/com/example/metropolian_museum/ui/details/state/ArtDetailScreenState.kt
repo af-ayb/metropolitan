@@ -4,6 +4,6 @@ import com.example.metropolian_museum.domain.model.Art
 
 sealed interface ArtDetailScreenState{
     data class Success(val art: Art) : ArtDetailScreenState
-    object Error: ArtDetailScreenState
+    data class Error(val message: String): ArtDetailScreenState
     object Loading: ArtDetailScreenState
 }

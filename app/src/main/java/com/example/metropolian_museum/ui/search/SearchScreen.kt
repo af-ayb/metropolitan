@@ -1,7 +1,6 @@
 package com.example.metropolian_museum.ui.search
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,28 +21,27 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.metropolian_museum.R
-import com.example.metropolian_museum.data.model.ObjectsApi
 import com.example.metropolian_museum.domain.model.Objects
 import com.example.metropolian_museum.ui.AppBar
 import com.example.metropolian_museum.ui.search.preview.SearchScreenPreviewProvider
 import com.example.metropolian_museum.ui.search.state.SearchScreenState
 import com.example.metropolian_museum.ui.search.state.SearchViewModel
 import com.example.metropolian_museum.ui.theme.MetropolianMuseumTheme
+import kotlinx.coroutines.Dispatchers
 
 // stateful version of the screen
 @Composable
@@ -55,6 +53,7 @@ fun SearchScreen(
 ){
     val screenState = viewModel.uiState.collectAsStateWithLifecycle()
     val keyboardController = LocalSoftwareKeyboardController.current
+    val keywordState = viewModel.keyword.collectAsState(Dispatchers.Main.immediate)
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -68,7 +67,7 @@ fun SearchScreen(
             modifier = Modifier.fillMaxSize(),
         ) {
             SearchScreen(
-                query = viewModel.keyword,
+                query = keywordState.value,
                 state = screenState.value,
                 event = viewModel::updateKeyword,
                 onSearchClicked = {keyboardController?.hide()},
@@ -229,7 +228,7 @@ private fun ArtIdCard(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun SearchScreenPreview(
     @PreviewParameter(SearchScreenPreviewProvider::class) state: SearchScreenState

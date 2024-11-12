@@ -20,7 +20,7 @@ sealed interface SearchScreenState{
     object Loading: SearchScreenState
     data class Error(val message: String): SearchScreenState
     data class Success(
-        val userQuery: String,
+        //val userQuery: String,
         val objects: Objects
     ): SearchScreenState
 }

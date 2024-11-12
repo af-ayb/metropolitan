@@ -7,7 +7,7 @@ internal class DetailsScreenPreviewProvider : PreviewParameterProvider<ArtDetail
 
     override val values = sequenceOf (
         ArtDetailScreenState.Loading,
-        ArtDetailScreenState.Error,
+        ArtDetailScreenState.Error("Error"),
         ArtDetailScreenState.Success(
             DetailsPreviewData.artWithFullDescription
         )
