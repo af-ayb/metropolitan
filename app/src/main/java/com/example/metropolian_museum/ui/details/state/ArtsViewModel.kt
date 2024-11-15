@@ -6,8 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.metropolian_museum.ui.ScreenRoute
 import com.example.metropolian_museum.data.repository.ArtsRepository
+import com.example.metropolian_museum.domain.model.ArtDetails
 import com.example.metropolian_museum.domain.model.ArtId
 import com.example.metropolian_museum.domain.usecase.GetArtDetailsUseCase
+import com.example.metropolian_museum.domain.usecase.UpdateFavoriteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
@@ -24,6 +26,7 @@ import javax.inject.Inject
 class ArtDetailsViewModel @Inject constructor(
     private val artsRepository: ArtsRepository,
     private val getArtDetailsUseCase: GetArtDetailsUseCase,
+    private val updateFavoriteUseCase: UpdateFavoriteUseCase,
     savedStateHandle: SavedStateHandle
 ): ViewModel() {
 
@@ -64,8 +67,8 @@ class ArtDetailsViewModel @Inject constructor(
             )
     val uiState = _uiState
 
-    fun updateFavorite(){
-        artsRepository.updateFavorite(ArtId(artId))
+    fun updateFavorite(artDetails: ArtDetails){
+        updateFavoriteUseCase(artDetails)
             .catch { e -> e.printStackTrace() }
             .launchIn(viewModelScope)
     }

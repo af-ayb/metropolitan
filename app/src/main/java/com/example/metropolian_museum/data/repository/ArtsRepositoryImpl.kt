@@ -109,25 +109,32 @@ class ArtsRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun updateFavorite(artId: ArtId): Flow<Boolean>{
-        return flowOf(artId)
-            .map{it.asEntity().copy(favorite = !artId.isFavorite)}
-            .map{dao.insert(it)}
-            .map{it != 0L}
-//        return dao.getCountOfArtInFavorite(artId)
-//            .map {
-//                if (it > 0) {
-//                    dao.getFavouriteByArtId(artId).let {
-//                        dao.delete(it)
-//                        Log.d("Repo", "${artId} deleted")
-//                        false
-//                    }
-//                } else {
-//                    dao.insert(artId.asEntity())
-//                    true
-//                }
-//            }
-//            .catch{e -> emit(false)}
+//    override fun updateFavorite(artId: ArtId): Flow<Boolean>{
+//        return flowOf(artId)
+//            .map{it.asEntity().copy(favorite = !artId.isFavorite)}
+//            .map{dao.insert(it)}
+//            .map{it != 0L}
+////        return dao.getCountOfArtInFavorite(artId)
+////            .map {
+////                if (it > 0) {
+////                    dao.getFavouriteByArtId(artId).let {
+////                        dao.delete(it)
+////                        Log.d("Repo", "${artId} deleted")
+////                        false
+////                    }
+////                } else {
+////                    dao.insert(artId.asEntity())
+////                    true
+////                }
+////            }
+////            .catch{e -> emit(false)}
+//    }
+
+    override fun updateFavorite(artDetails: ArtDetails): Flow<Boolean> {
+        return flowOf(artDetails)
+            .map { it.asEntity().copy(favorite = !artDetails.isFavorite) }
+            .map { dao.insert(it) }
+            .map { it != 0L }
     }
 
 //    override fun isFavorite(artId: Int): Flow<Boolean> {
@@ -171,4 +178,9 @@ fun Int.asArtIdDomain() = ArtId(
 fun ArtEntity.asDomain() = ArtId(
     artId = artId,
     isFavorite = favorite
+)
+
+fun ArtDetails.asEntity() = ArtEntity(
+    artId = objectId,
+    favorite = isFavorite
 )

@@ -45,8 +45,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import androidx.compose.runtime.getValue
 import com.example.metropolian_museum.R
 import com.example.metropolian_museum.domain.model.ArtDetails
 import com.example.metropolian_museum.ui.AppBar
@@ -62,7 +64,7 @@ fun ArtDetailsScreen(
     canNavigateBack: Boolean,
     navigateUp: () -> Unit,
 ){
-    val screenState = viewModel.uiState.collectAsState()
+    val screenState by viewModel.uiState.collectAsStateWithLifecycle()
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -76,7 +78,7 @@ fun ArtDetailsScreen(
             modifier = Modifier.fillMaxSize(),
         ) {
             DetailsScreen(
-                state = screenState.value,
+                state = screenState,
                 onFavoriteClick = viewModel::updateFavorite,
                 isFavorite = true,
                 modifier = Modifier
@@ -90,7 +92,7 @@ fun ArtDetailsScreen(
 private fun DetailsScreen(
     state: ArtDetailScreenState,
     isFavorite: Boolean,
-    onFavoriteClick: () -> Unit,
+    onFavoriteClick: (ArtDetails) -> Unit,
     modifier: Modifier = Modifier
 ){
     when(state){
@@ -189,7 +191,7 @@ fun ArtImage(
 fun DetailsLayout(
     artDetails: ArtDetails,
     isFavorite: Boolean,
-    onFavoriteClick: () -> Unit,
+    onFavoriteClick: (ArtDetails) -> Unit,
     modifier: Modifier = Modifier,
 ){
     Column(
@@ -200,7 +202,7 @@ fun DetailsLayout(
         ArtImage(
             picUrl = artDetails.primaryImage,
             isFavorite = artDetails.isFavorite,
-            onClick = onFavoriteClick
+            onClick = {onFavoriteClick.invoke(artDetails)}
         )
         Column(
             modifier = Modifier
