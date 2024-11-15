@@ -1,6 +1,5 @@
 package com.example.metropolian_museum.ui.details
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -28,8 +27,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,7 +46,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import androidx.compose.runtime.getValue
 import com.example.metropolian_museum.R
 import com.example.metropolian_museum.domain.model.ArtDetails
 import com.example.metropolian_museum.ui.AppBar
@@ -80,7 +77,6 @@ fun ArtDetailsScreen(
             DetailsScreen(
                 state = screenState,
                 onFavoriteClick = viewModel::updateFavorite,
-                isFavorite = true,
                 modifier = Modifier
                     .padding(top = innerPadding.calculateTopPadding())
                     .fillMaxSize())
@@ -91,7 +87,6 @@ fun ArtDetailsScreen(
 @Composable
 private fun DetailsScreen(
     state: ArtDetailScreenState,
-    isFavorite: Boolean,
     onFavoriteClick: (ArtDetails) -> Unit,
     modifier: Modifier = Modifier
 ){
@@ -106,7 +101,6 @@ private fun DetailsScreen(
             DetailsLayout(
                 artDetails = state.artDetails,
                 onFavoriteClick = onFavoriteClick,
-                isFavorite = isFavorite,
                 modifier = modifier.fillMaxSize()
             )
         }
@@ -190,7 +184,6 @@ fun ArtImage(
 @Composable
 fun DetailsLayout(
     artDetails: ArtDetails,
-    isFavorite: Boolean,
     onFavoriteClick: (ArtDetails) -> Unit,
     modifier: Modifier = Modifier,
 ){
@@ -325,7 +318,6 @@ fun DetailsScreenPreview(
     MetropolianMuseumTheme {
         DetailsScreen(
             state = state,
-            isFavorite = true,
             onFavoriteClick = {}
         )
     }

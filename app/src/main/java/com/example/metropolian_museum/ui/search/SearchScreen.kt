@@ -38,7 +38,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.metropolian_museum.R
 import com.example.metropolian_museum.domain.model.ArtId
-import com.example.metropolian_museum.domain.model.ArtList
 import com.example.metropolian_museum.ui.AppBar
 import com.example.metropolian_museum.ui.search.preview.SearchScreenPreviewProvider
 import com.example.metropolian_museum.ui.search.state.SearchScreenState

@@ -14,14 +14,9 @@ interface ArtDao {
     fun insert(art: ArtEntity): Long
 
     @Query("SELECT * from favorites WHERE favorite = 1")
-    fun getFavourites(): Flow<List<ArtEntity>>
+    fun getFavorites(): Flow<List<ArtEntity>>
 
     @Query("SELECT * from favorites WHERE artId =:id")
     fun getFavorite(id: Int): Flow<ArtEntity?>
 
-//    @Query("SELECT * from favourites WHERE artId=:artId")
-//    fun getFavouriteByArtId(artId: Int): ArtEntity
-
-//    @Query("SELECT COUNT(*) FROM favourites WHERE artId=:artId")
-//    fun getCountOfArtInFavorite(artId: Int): Flow<Int>
 }

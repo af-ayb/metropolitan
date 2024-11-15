@@ -2,7 +2,6 @@ package com.example.metropolian_museum.ui
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.toRoute
-import com.example.metropolian_museum.domain.model.ArtId
 import kotlinx.serialization.Serializable
 
 sealed interface ScreenRoute{

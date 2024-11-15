@@ -1,42 +1,25 @@
 package com.example.metropolian_museum.ui.search.state
 
-import android.util.Log
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.metropolian_museum.data.repository.ArtsRepository
 import com.example.metropolian_museum.domain.LoadingEvent
 import com.example.metropolian_museum.domain.usecase.GetArtIdListUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.withContext
-import okhttp3.Dispatcher
-import java.io.IOException
 import javax.inject.Inject
-import kotlin.coroutines.coroutineContext
 
 @OptIn(FlowPreview::class)
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val artsRepository: ArtsRepository,
-    getArtIdListUseCase: GetArtIdListUseCase,
+    private val getArtIdListUseCase: GetArtIdListUseCase,
 ): ViewModel(){
     private val _keyword = MutableStateFlow<String>("")
     val keyword = _keyword.asStateFlow()
@@ -49,26 +32,22 @@ class SearchViewModel @Inject constructor(
     private val _uiState: StateFlow<SearchScreenState> = _keyword
         .mapLatest {
             getArtIdListUseCase(it)
-//            artsRepository.getArtsFlow(it)
-//                artsRepository.merge()
-//            artsRepository.getArtsFlowLoading(it)
-//                .mapLatest  {
-//                    SearchScreenState.Success(it.)
-//                }
-//            artsRepository.getArtsFlow(it)
                 .mapLatest {
-                    SearchScreenState.Loading
-                    try{
-                        SearchScreenState.Success(it)
-                    }catch (e: IOException){
-                        e.printStackTrace()
-                        SearchScreenState.Error(e.message.toString())
+                    when(it){
+                        LoadingEvent.Loading -> SearchScreenState.Loading
+                        is LoadingEvent.Error -> SearchScreenState.Error(it.reason)
+                        is LoadingEvent.Success -> {
+                            if (it.data.isEmpty()){
+                                if (!keyword.value.isEmpty())
+                                    SearchScreenState.Error("No arts were found!")
+                                else{
+                                    SearchScreenState.Empty
+                                }
+                            }
+                            else
+                                SearchScreenState.Success(it.data)
+                        }
                     }
-//                    when(it){
-//                        LoadingEvent.Loading -> SearchScreenState.Loading
-//                        is LoadingEvent.Error -> SearchScreenState.Error(it.reason)
-//                        is LoadingEvent.Success -> SearchScreenState.Success(it.data)
-//                    }
                 }
         }
 
