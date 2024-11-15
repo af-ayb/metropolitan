@@ -48,20 +48,27 @@ class SearchViewModel @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     private val _uiState: StateFlow<SearchScreenState> = _keyword
         .mapLatest {
-//            getArtIdListUseCase(it)
+            getArtIdListUseCase(it)
 //            artsRepository.getArtsFlow(it)
 //                artsRepository.merge()
-            artsRepository.getArtsFlowLoading(it)
+//            artsRepository.getArtsFlowLoading(it)
 //                .mapLatest  {
 //                    SearchScreenState.Success(it.)
 //                }
 //            artsRepository.getArtsFlow(it)
                 .mapLatest {
-                    when(it){
-                        LoadingEvent.Loading -> SearchScreenState.Loading
-                        is LoadingEvent.Error -> SearchScreenState.Error(it.reason)
-                        is LoadingEvent.Success -> SearchScreenState.Success(it.data)
+                    SearchScreenState.Loading
+                    try{
+                        SearchScreenState.Success(it)
+                    }catch (e: IOException){
+                        e.printStackTrace()
+                        SearchScreenState.Error(e.message.toString())
                     }
+//                    when(it){
+//                        LoadingEvent.Loading -> SearchScreenState.Loading
+//                        is LoadingEvent.Error -> SearchScreenState.Error(it.reason)
+//                        is LoadingEvent.Success -> SearchScreenState.Success(it.data)
+//                    }
                 }
         }
 

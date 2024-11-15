@@ -21,12 +21,12 @@ class GetArtIdListUseCase @Inject constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(searchQuery: String): Flow<List<ArtId>> = repository.getArtsFlow(searchQuery)
-
         .combine(
-            repository.getFavoritesIds()
+            repository.getFavs()
         ){
             apiList, dbList ->
-            apiList.map { it
+            apiList.map { art ->
+                art.copy(isFavorite = dbList.find{it.artId == art.artId}?.isFavorite ?: false)
             }
 //            when(apiList){
 //                LoadingEvent.Loading -> LoadingEvent.Loading

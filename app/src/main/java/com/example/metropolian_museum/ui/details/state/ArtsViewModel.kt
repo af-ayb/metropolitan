@@ -32,24 +32,6 @@ class ArtDetailsViewModel @Inject constructor(
 
     val artId = ScreenRoute.DetailsScreenRoute.from(savedStateHandle).id
 
-//    @OptIn(ExperimentalCoroutinesApi::class)
-//    private val _uiState: StateFlow<ArtDetailScreenState> =
-//        snapshotFlow{artId}
-//            .mapLatest {
-//                ArtDetailScreenState.Loading
-//                try{
-//                    ArtDetailScreenState.Success(artsRepository.getArtDetailsById(artId).first())
-//                }catch (e: Exception){
-//                    e.printStackTrace()
-//                    ArtDetailScreenState.Error(e.message.toString())
-//                }
-//            }
-//            .stateIn(
-//                scope = viewModelScope,
-//                started = SharingStarted.Lazily,
-//                initialValue = ArtDetailScreenState.Loading
-//            )
-
     @OptIn(ExperimentalCoroutinesApi::class)
     private val _uiState: StateFlow<ArtDetailScreenState> = getArtDetailsUseCase(artId)
         .mapLatest{

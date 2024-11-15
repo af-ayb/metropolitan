@@ -13,7 +13,7 @@ interface ArtDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(art: ArtEntity): Long
 
-    @Query("SELECT * from favorites")
+    @Query("SELECT * from favorites WHERE favorite = 1")
     fun getFavourites(): Flow<List<ArtEntity>>
 
     @Query("SELECT * from favorites WHERE artId =:id")
