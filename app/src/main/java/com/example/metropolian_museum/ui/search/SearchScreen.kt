@@ -15,6 +15,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -24,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -35,7 +37,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.metropolian_museum.R
-import com.example.metropolian_museum.domain.model.Objects
+import com.example.metropolian_museum.domain.model.ArtId
+import com.example.metropolian_museum.domain.model.ArtList
 import com.example.metropolian_museum.ui.AppBar
 import com.example.metropolian_museum.ui.search.preview.SearchScreenPreviewProvider
 import com.example.metropolian_museum.ui.search.state.SearchScreenState
@@ -47,7 +50,7 @@ import kotlinx.coroutines.Dispatchers
 @Composable
 fun SearchScreen(
     viewModel: SearchViewModel = hiltViewModel(),
-    onIdClick: (String) -> Unit,
+    onIdClick: (Int) -> Unit,
     canNavigateBack: Boolean,
     navigateUp: () -> Unit,
 ){
@@ -87,7 +90,7 @@ private fun SearchScreen(
     query: String,
     state: SearchScreenState,
     event: (String) -> Unit,
-    onIdClick: (String) -> Unit,
+    onIdClick: (Int) -> Unit,
     onSearchClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ){
@@ -113,7 +116,7 @@ private fun SearchScreen(
                 )
             }
             is SearchScreenState.Success -> {
-                ArtsList(state.objects, onIdClick = onIdClick)
+                ArtsList(state.artList, onIdClick = onIdClick)
             }
         }
     }
@@ -187,19 +190,19 @@ private fun SearchTextField(
 
 @Composable
 private fun ArtsList(
-    objects: Objects,
-    onIdClick: (String) -> Unit,
+    artList: List<ArtId>,
+    onIdClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ){
-    val arts = objects.objectsIds?.map (Int::toString) ?: emptyList()
+//    val arts = artList? ?: emptyList()
     LazyVerticalGrid (
         columns = GridCells.Adaptive(dimensionResource(R.dimen.grid_cell_size)),
         modifier = modifier
             .padding(top = dimensionResource(R.dimen.padding_medium)),
     ){
         items(
-            items = arts,
-            key = {art -> art}
+            items = artList,
+            key = {art -> art.artId}
         ){art ->
             ArtIdCard(
                 artId = art,
@@ -212,16 +215,18 @@ private fun ArtsList(
 
 @Composable
 private fun ArtIdCard(
-    artId: String,
-    onIdClick: (String) -> Unit,
+    artId: ArtId,
+    onIdClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ){
     Card(
-        modifier = modifier.padding(dimensionResource(R.dimen.padding_small)),
-        onClick = {onIdClick(artId)}
+        modifier = modifier
+            .padding(dimensionResource(R.dimen.padding_small)),
+        onClick = {onIdClick(artId.artId)},
+        colors = if (artId.isFavorite) CardDefaults.cardColors(containerColor = Color.Red) else CardDefaults.cardColors()
     ){
         Text(
-            text = artId,
+            text = "${artId.artId}",
             modifier = modifier.padding(vertical = dimensionResource(R.dimen.padding_medium)),
             textAlign = TextAlign.Center
         )

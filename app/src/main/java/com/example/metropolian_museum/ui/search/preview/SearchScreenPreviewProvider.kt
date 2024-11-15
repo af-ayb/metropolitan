@@ -10,7 +10,7 @@ class SearchScreenPreviewProvider : PreviewParameterProvider<SearchScreenState> 
         SearchScreenState.Loading,
         SearchScreenState.Success(
            //"a",
-            SearchPreviewData.objects,
+            SearchPreviewData.artList,
         ),
         SearchScreenState.Error("No data")
     )

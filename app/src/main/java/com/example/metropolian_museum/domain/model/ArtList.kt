@@ -1,9 +1,6 @@
 package com.example.metropolian_museum.domain.model
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-
-data class Objects(
+data class ArtList(
     val total: Int,
     val objectsIds: List<Int>?
 )

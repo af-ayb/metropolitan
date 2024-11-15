@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.metropolian_museum.data.repository.ArtsRepository
 import com.example.metropolian_museum.domain.LoadingEvent
+import com.example.metropolian_museum.domain.usecase.GetArtIdListUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -21,6 +22,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -34,6 +36,7 @@ import kotlin.coroutines.coroutineContext
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val artsRepository: ArtsRepository,
+    getArtIdListUseCase: GetArtIdListUseCase,
 ): ViewModel(){
     private val _keyword = MutableStateFlow<String>("")
     val keyword = _keyword.asStateFlow()
@@ -45,24 +48,24 @@ class SearchViewModel @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     private val _uiState: StateFlow<SearchScreenState> = _keyword
         .mapLatest {
-            artsRepository.searchArtsFlow(it)
+//            getArtIdListUseCase(it)
+//            artsRepository.getArtsFlow(it)
+//                artsRepository.merge()
+            artsRepository.getArtsFlowLoading(it)
+//                .mapLatest  {
+//                    SearchScreenState.Success(it.)
+//                }
+//            artsRepository.getArtsFlow(it)
                 .mapLatest {
                     when(it){
                         LoadingEvent.Loading -> SearchScreenState.Loading
                         is LoadingEvent.Error -> SearchScreenState.Error(it.reason)
-                        is LoadingEvent.Success -> {
-                            if (it.data.total==0)
-                                SearchScreenState.Empty
-                            else{
-                                SearchScreenState.Success(it.data)
-                            }
-                        }
+                        is LoadingEvent.Success -> SearchScreenState.Success(it.data)
                     }
                 }
         }
-        .flatMapLatest {
-            it
-        }
+
+        .flatMapLatest { it }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.Lazily,

@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ObjectsApi(
+data class ArtListApi(
     val total: Int,
     @SerialName("objectIDs")
     val objectsIds: List<Int>?

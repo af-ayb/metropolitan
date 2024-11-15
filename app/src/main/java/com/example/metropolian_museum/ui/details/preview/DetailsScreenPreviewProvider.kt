@@ -9,7 +9,7 @@ internal class DetailsScreenPreviewProvider : PreviewParameterProvider<ArtDetail
         ArtDetailScreenState.Loading,
         ArtDetailScreenState.Error("Error"),
         ArtDetailScreenState.Success(
-            DetailsPreviewData.artWithFullDescription
+            DetailsPreviewData.artDetailsWithFullDescription
         )
     )
 

@@ -1,10 +1,10 @@
 package com.example.metropolian_museum.ui.details.preview
 
-import com.example.metropolian_museum.domain.model.Art
+import com.example.metropolian_museum.domain.model.ArtDetails
 
 internal object DetailsPreviewData {
-    val artWithFullDescription =
-        Art(
+    val artDetailsWithFullDescription =
+        ArtDetails(
             objectId = 122,
             primaryImage = "https://images.metmuseum.org/CRDImages/ep/original/DT1567.jpg",
             additionalImages = listOf(
@@ -20,8 +20,8 @@ internal object DetailsPreviewData {
             objectDate = "late 17th century",
         )
 
-    val artWithNullFields =
-        Art(
+    val artDetailsWithNullFields =
+        ArtDetails(
             objectId = 122,
             primaryImage = null,
             additionalImages = null,

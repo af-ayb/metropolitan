@@ -1,9 +1,6 @@
 package com.example.metropolian_museum.domain.model
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-
-data class Art (
+data class ArtDetails (
     val objectId: Int,
     val primaryImage: String? = null,
     val additionalImages: List<String>? = null,
@@ -13,5 +10,6 @@ data class Art (
     val period: String? = null,
     val artistRole: String? = null,
     val artistDisplayName: String? = null,
-    val objectDate: String? = null
+    val objectDate: String? = null,
+    val isFavorite: Boolean = false
 )

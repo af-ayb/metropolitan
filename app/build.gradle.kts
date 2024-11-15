@@ -30,6 +30,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
@@ -77,9 +78,9 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
 
     //Room
-    //implementation("androidx.room:room-runtime:2.6.1")
-    //ksp("androidx.room:room-compiler:2.6.1")
-    //implementation("androidx.room:room-ktx:2.6.1")
+    implementation(libs.room.runtime)
+    ksp(libs.room.compiler)
+    implementation(libs.room.ktx)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

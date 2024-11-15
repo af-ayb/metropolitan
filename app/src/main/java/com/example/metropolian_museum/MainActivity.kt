@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import com.example.metropolian_museum.data.local.dao.ArtDao
 import com.example.metropolian_museum.ui.MetropolianMuseumApp
 import com.example.metropolian_museum.ui.theme.MetropolianMuseumTheme
 import dagger.hilt.android.AndroidEntryPoint

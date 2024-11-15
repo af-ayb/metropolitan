@@ -1,5 +1,6 @@
 package com.example.metropolian_museum.ui.details
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -17,11 +18,17 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,7 +48,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.metropolian_museum.R
-import com.example.metropolian_museum.domain.model.Art
+import com.example.metropolian_museum.domain.model.ArtDetails
 import com.example.metropolian_museum.ui.AppBar
 import com.example.metropolian_museum.ui.details.preview.DetailsScreenPreviewProvider
 import com.example.metropolian_museum.ui.details.state.ArtDetailScreenState
@@ -68,7 +75,13 @@ fun ArtDetailsScreen(
         Surface(
             modifier = Modifier.fillMaxSize(),
         ) {
-            DetailsScreen(screenState.value, modifier = Modifier.padding(top = innerPadding.calculateTopPadding()).fillMaxSize())
+            DetailsScreen(
+                state = screenState.value,
+                onFavoriteClick = viewModel::updateFavorite,
+                isFavorite = true,
+                modifier = Modifier
+                    .padding(top = innerPadding.calculateTopPadding())
+                    .fillMaxSize())
         }
     }
 }
@@ -76,17 +89,24 @@ fun ArtDetailsScreen(
 @Composable
 private fun DetailsScreen(
     state: ArtDetailScreenState,
+    isFavorite: Boolean,
+    onFavoriteClick: () -> Unit,
     modifier: Modifier = Modifier
 ){
     when(state){
         is ArtDetailScreenState.Loading -> {
-            DetailsScreenLoading(modifier)
+            DetailsScreenLoading(modifier.fillMaxSize())
         }
         is ArtDetailScreenState.Error -> {
-            DetailsScreenError(modifier)
+            DetailsScreenError(modifier.fillMaxSize())
         }
         is ArtDetailScreenState.Success -> {
-            DetailsLayout(art = state.art, modifier = modifier)
+            DetailsLayout(
+                artDetails = state.artDetails,
+                onFavoriteClick = onFavoriteClick,
+                isFavorite = isFavorite,
+                modifier = modifier.fillMaxSize()
+            )
         }
     }
 }
@@ -121,10 +141,13 @@ private fun DetailsScreenError(
 @Composable
 fun ArtImage(
     picUrl: String?,
+    isFavorite: Boolean = false,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ){
     Box(
-        modifier = modifier
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.BottomEnd,
     ){
         if (picUrl.isNullOrEmpty()){
             Image(
@@ -149,12 +172,24 @@ fun ArtImage(
                     .fillMaxWidth()
             )
         }
+        IconButton (
+            onClick = onClick,
+            modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
+        ){
+            Icon(
+                imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Outlined.FavoriteBorder,
+                tint = Color.Red,
+                contentDescription = "Favorite",
+            )
+        }
     }
 }
 
 @Composable
 fun DetailsLayout(
-    art: Art,
+    artDetails: ArtDetails,
+    isFavorite: Boolean,
+    onFavoriteClick: () -> Unit,
     modifier: Modifier = Modifier,
 ){
     Column(
@@ -163,7 +198,9 @@ fun DetailsLayout(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         ArtImage(
-            picUrl = art.primaryImage
+            picUrl = artDetails.primaryImage,
+            isFavorite = artDetails.isFavorite,
+            onClick = onFavoriteClick
         )
         Column(
             modifier = Modifier
@@ -173,35 +210,35 @@ fun DetailsLayout(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             TextOrEmpty(
-                text = art.title,
+                text = artDetails.title,
                 style = MaterialTheme.typography.headlineSmall,
                 textAlign = TextAlign.Center
             )
             TextOrEmpty(
-                text = art.objectDate,
+                text = artDetails.objectDate,
                 style = MaterialTheme.typography.bodyMedium,
             )
             TextOrEmpty(
-                text = art.department,
+                text = artDetails.department,
                 style = MaterialTheme.typography.labelLarge
             )
             MultipleTextsOrEmpty(
-                texts = listOf(art.culture, art.period),
+                texts = listOf(artDetails.culture, artDetails.period),
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center
             )
             MultipleTextsOrEmpty(
-                texts = listOf(art.artistRole, art.artistDisplayName),
+                texts = listOf(artDetails.artistRole, artDetails.artistDisplayName),
                 style = MaterialTheme.typography.labelLarge
             )
             Text(
-                text = art.objectId.toString(),
+                text = artDetails.objectId.toString(),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.secondary
             )
         }
-        art.additionalImages?.let{
-            ImagesScroller(art.additionalImages,
+        artDetails.additionalImages?.let{
+            ImagesScroller(artDetails.additionalImages,
                 modifier = Modifier.padding(top = dimensionResource(R.dimen.padding_medium)))
         }
     }
@@ -278,14 +315,16 @@ fun ImagesScroller(imagesUrls: List<String>, modifier: Modifier = Modifier){
 
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun DetailsScreenPreview(
     @PreviewParameter(DetailsScreenPreviewProvider::class) state: ArtDetailScreenState
 ){
     MetropolianMuseumTheme {
         DetailsScreen(
-            state = state
+            state = state,
+            isFavorite = true,
+            onFavoriteClick = {}
         )
     }
 }

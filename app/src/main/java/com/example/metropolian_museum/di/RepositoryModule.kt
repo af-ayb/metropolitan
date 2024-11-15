@@ -1,7 +1,7 @@
 package com.example.metropolian_museum.di
 
 import com.example.metropolian_museum.data.repository.ArtsRepository
-import com.example.metropolian_museum.data.repository.NetworkArtsRepository
+import com.example.metropolian_museum.data.repository.ArtsRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -15,6 +15,6 @@ interface RepositoryModule {
     @Binds
     @Singleton
     fun bindRepository(
-        artsRepository: NetworkArtsRepository
+        artsRepository: ArtsRepositoryImpl
     ): ArtsRepository
 }
