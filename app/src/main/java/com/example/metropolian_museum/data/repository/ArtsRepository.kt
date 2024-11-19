@@ -11,5 +11,6 @@ interface ArtsRepository {
     fun updateFavorite(artDetails: ArtDetails): Flow<Boolean>
     fun getFavorites(): Flow<List<ArtId>>
     fun getFavoriteById(id: Int): Flow<ArtId?>
+    fun getArtsListWithFavs(searchQuery: String) : Flow<LoadingEvent<List<ArtId>>>
 }
 
