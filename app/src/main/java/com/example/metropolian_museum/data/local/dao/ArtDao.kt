@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 interface ArtDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(art: ArtEntity): Long
+    suspend fun insert(art: ArtEntity): Long
 
     @Query("SELECT * from favorites WHERE favorite = 1")
     fun getFavorites(): Flow<List<ArtEntity>>

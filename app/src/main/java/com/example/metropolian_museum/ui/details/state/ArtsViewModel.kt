@@ -24,7 +24,7 @@ class ArtDetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ): ViewModel() {
 
-    val artId = ScreenRoute.DetailsScreenRoute.from(savedStateHandle).id
+    private val artId = ScreenRoute.DetailsScreenRoute.from(savedStateHandle).id
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private val _uiState: StateFlow<ArtDetailScreenState> = getArtDetailsUseCase(artId)
